@@ -65,7 +65,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataModels\PageDetails.cs" />
+    <Compile Include="DataModels\ProductNutritionalInformation.cs" />
+    <Compile Include="DataModels\ProductPageDetails.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AppSettings.Designer.cs">
       <AutoGen>True</AutoGen>

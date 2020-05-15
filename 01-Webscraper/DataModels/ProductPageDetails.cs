@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace Webscraper.DataModels
 {
-    class PageDetails
+    public class ProductPageDetails
     {
         public string Title { get; set; }
         public string Description { get; set; }
         public string URL { get; set; }
+        public ProductNutritionalInformation ProductNutritionalInformation { get; set; }
     }
 }
