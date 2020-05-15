@@ -1,15 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+
+/* http://devtools.truecommerce.net:8080/challenge001 */
 
 namespace Webscraper
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
+            WebScraper scraper = new WebScraper();
+
+            var links = scraper.GetPageLinks(Properties.AppSettings.Default.KibbleStoresURL);
+            foreach (var item in links)
+            {
+                Console.WriteLine(item);
+            }
+            Console.Read();
         }
     }
 }

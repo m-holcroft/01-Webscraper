@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="_01_Webscraper.Properties" GeneratedClassName="AppSettings">
+  <Profiles />
+  <Settings>
+    <Setting Name="KibbleStoresURL" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://devtools.truecommerce.net:8080/challenge001</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
