@@ -1,6 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using Webscraper.Extensions.JSON;
+using Webscraper.Managers;
 
 /* http://devtools.truecommerce.net:8080/challenge001 */
 
@@ -10,25 +14,36 @@ namespace Webscraper
     {
         private static void Main(string[] args)
         {
-            WebScraper scraper = new WebScraper();
+            WebManager scraper = new WebManager();
 
-            var links = scraper.GetPageLinks(Properties.AppSettings.Default.KibbleStoresURL);
-            foreach (var details in scraper.GetPageDetails(links))
+            var productCatalogueSummary = scraper.ScrapeSite(Properties.AppSettings.Default.KibbleStoresURL);
+            foreach (var details in productCatalogueSummary.ProductPageDetails)
             {
-                Console.OutputEncoding = System.Text.Encoding.UTF8;
+                Console.OutputEncoding = Encoding.UTF8;
                 Console.WriteLine("Title: " + details.Title);
-                Console.WriteLine("Description: " + details.Description);
-                Console.WriteLine("URL: " + details.URL);
-                Console.WriteLine("\tEnergy: " + details.ProductNutritionalInformation.Energy.ToString() + "kcal");
-                Console.WriteLine("\tFat: " + details.ProductNutritionalInformation.Fat.ToString() + "g");
-                Console.WriteLine("\tSaturates: " + details.ProductNutritionalInformation.Saturates.ToString() + "g");
-                Console.WriteLine("\tCarbohydrate: " + details.ProductNutritionalInformation.Carbohydrates.ToString() + "g");
-                Console.WriteLine("\tTotal Sugars: " + details.ProductNutritionalInformation.TotalSugars.ToString() + "g");
-                Console.WriteLine("\tFibre: " + details.ProductNutritionalInformation.Fibre.ToString() + "g");
-                Console.WriteLine("\tProtein: " + details.ProductNutritionalInformation.Protein.ToString() + "g");
-                Console.WriteLine("\tSalt: " + details.ProductNutritionalInformation.Salt.ToString() + "g");
-                Console.WriteLine("----------------------------------");
+                Console.WriteLine("\tCode:" + details.Code);
+                Console.WriteLine("\tEnergy: " + string.Format("{0:0}kcal per 100g", details.Energy));
+                Console.WriteLine("\tUnit Price: " + string.Format("£{0:0.00}/unit", details.UnitPrice));
+                Console.WriteLine("\tDescription: " + details.Description);
+                Console.WriteLine("----------------------------------");    
             }
+
+            Console.WriteLine("--------- Total ----------");
+            Console.WriteLine(string.Format("Net: £{0:0.00}", productCatalogueSummary.PriceSummary.Net));
+            Console.WriteLine(string.Format("VAT: £{0:0.00}", productCatalogueSummary.PriceSummary.VAT));
+            Console.WriteLine(string.Format("Gross: £{0:0.00}", productCatalogueSummary.PriceSummary.Gross));
+
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.Converters.Add(new DecimalFormatConverter());
+            settings.NullValueHandling = NullValueHandling.Ignore;
+
+            string json = JsonConvert.SerializeObject(productCatalogueSummary, Formatting.Indented, settings);
+
+            if (File.Exists(@".\Output\Output.txt"))
+                File.Delete(@".\Output\Output.txt");
+
+            File.WriteAllText(@".\Output\Output.txt", json);
+
             Console.Read();
         }
     }
