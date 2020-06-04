@@ -83,7 +83,7 @@ namespace Webscraper.Managers
                                     break;
 
                                 case "productDescription2":
-                                        pageDetails.Description = span.InnerText;
+                                        pageDetails.Description = HtmlEntity.DeEntitize(span.InnerText);
                                     break;
 
                                 case "productItemCode":
