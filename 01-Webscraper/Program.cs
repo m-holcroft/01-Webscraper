@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Webscraper.Extensions.JSON;
 using Webscraper.Managers;
 
@@ -12,11 +13,18 @@ namespace Webscraper
 {
     internal static class Program
     {
-        private static void Main(string[] args)
+
+        static void Main (string[] args)
+        {
+            MainAsync(args).Wait();
+        }
+
+        private static async Task MainAsync(string[] args)
         {
             WebManager scraper = new WebManager();
 
-            var productCatalogueSummary = scraper.ScrapeSite(Properties.AppSettings.Default.KibbleStoresURL);
+            var productCatalogueSummary = await scraper.ScrapeSite(Properties.AppSettings.Default.KibbleStoresURL);
+
             foreach (var details in productCatalogueSummary.ProductPageDetails)
             {
                 Console.OutputEncoding = Encoding.UTF8;

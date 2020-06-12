@@ -10,8 +10,8 @@ namespace Webscraper.DataModels
     {
         public ProductCatalogueSummary()
         { 
-            this.ProductPageDetails = new List<ProductPageDetails>();
-            this.PriceSummary = new PriceSummary();
+            ProductPageDetails = new List<ProductPageDetails>();
+            PriceSummary = new PriceSummary();
         }
         public List<ProductPageDetails> ProductPageDetails { get; set; }
         public PriceSummary PriceSummary { get; set; }
