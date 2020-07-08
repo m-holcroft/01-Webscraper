@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Webscraper.Extensions.JSON;
 using Webscraper.Managers;
 
@@ -12,26 +13,34 @@ namespace Webscraper
 {
     internal static class Program
     {
-        private static void Main(string[] args)
+
+        static void Main (string[] args)
+        {
+            MainAsync(args).Wait();
+        }
+
+        private static async Task MainAsync(string[] args)
         {
             WebManager scraper = new WebManager();
 
-            var productCatalogueSummary = scraper.ScrapeSite(Properties.AppSettings.Default.KibbleStoresURL);
-            foreach (var details in productCatalogueSummary.ProductPageDetails)
-            {
-                Console.OutputEncoding = Encoding.UTF8;
-                Console.WriteLine("Title: " + details.Title);
-                Console.WriteLine("\tCode:" + details.Code);
-                Console.WriteLine("\tEnergy: " + string.Format("{0:0}kcal per 100g", details.Energy));
-                Console.WriteLine("\tUnit Price: " + string.Format("£{0:0.00}/unit", details.UnitPrice));
-                Console.WriteLine("\tDescription: " + details.Description);
-                Console.WriteLine("----------------------------------");    
-            }
+            Console.WriteLine("Starting...");
+            var productCatalogueSummary = await scraper.ScrapeSite(Properties.AppSettings.Default.KibbleStoresURL);
 
-            Console.WriteLine("--------- Total ----------");
-            Console.WriteLine(string.Format("Net: £{0:0.00}", productCatalogueSummary.PriceSummary.Net));
-            Console.WriteLine(string.Format("VAT: £{0:0.00}", productCatalogueSummary.PriceSummary.VAT));
-            Console.WriteLine(string.Format("Gross: £{0:0.00}", productCatalogueSummary.PriceSummary.Gross));
+            //foreach (var details in productCatalogueSummary.ProductPageDetails)
+            //{
+            //    Console.OutputEncoding = Encoding.UTF8;
+            //    Console.WriteLine("Title: " + details.Title);
+            //    Console.WriteLine("\tCode:" + details.Code);
+            //    Console.WriteLine("\tEnergy: " + string.Format("{0:0}kcal per 100g", details.Energy));
+            //    Console.WriteLine("\tUnit Price: " + string.Format("£{0:0.00}/unit", details.UnitPrice));
+            //    Console.WriteLine("\tDescription: " + details.Description);
+            //    Console.WriteLine("----------------------------------");
+            //}
+
+            //Console.WriteLine("--------- Total ----------");
+            //Console.WriteLine(string.Format("Net: £{0:0.00}", productCatalogueSummary.PriceSummary.Net));
+            //Console.WriteLine(string.Format("VAT: £{0:0.00}", productCatalogueSummary.PriceSummary.VAT));
+            //Console.WriteLine(string.Format("Gross: £{0:0.00}", productCatalogueSummary.PriceSummary.Gross));
 
             JsonSerializerSettings settings = new JsonSerializerSettings();
             settings.Converters.Add(new DecimalFormatConverter());
@@ -44,6 +53,8 @@ namespace Webscraper
 
             File.WriteAllText(@".\Output\Output.txt", json);
 
+            Console.WriteLine(@"Output file can be found inside the project folder at bin\[BuildMode]\Output\Output.txt");
+            Console.WriteLine("Press any key to continue...");
             Console.Read();
         }
     }

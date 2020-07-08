@@ -3,58 +3,58 @@ using ScrapySharp.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Webscraper.DataModels;
 
 namespace Webscraper.Managers
 {
     public class WebManager
     {
+        /*
+         IDEAS;
+
+             */
+
         private static ScrapySharp.Network.ScrapingBrowser _scrapingBrowser = null;
 
-        public WebManager()
+        private async Task<HtmlNode> GetHTML(string url_)
         {
-            _scrapingBrowser = new ScrapySharp.Network.ScrapingBrowser();
-            _scrapingBrowser.Encoding = Encoding.UTF8;
+            var webPage = await _scrapingBrowser.NavigateToPageAsync(new Uri(url_));
+            return webPage.Html;
         }
 
-        public ProductCatalogueSummary ScrapeSite(string url_)
+        public async Task<List<string>> GetPageLinks(string url_)
         {
-            var productCatalogueSummary = new ProductCatalogueSummary();
-            List<string> pageLinks = GetPageLinks(url_);
-            List<ProductPageDetails> pageDetails = null;
+            var homePageLinks = new List<string>();
+            var html = await GetHTML(url_);
+            var links = html.CssSelect("a");
 
-            if(pageLinks != null && pageLinks.Count > 0)
+            foreach (var link in links)
             {
-                pageDetails = GetPageDetails(pageLinks);
-            }
-
-            if(pageDetails != null)
-            {
-                double net = 0;
-                double vat = 0;
-                double gross = 0;
-
-                foreach (var detail in pageDetails)
+                if (link.Attributes["class"].Value.Contains("productLink"))
                 {
-                    productCatalogueSummary.ProductPageDetails.Add(detail);
-                    net += detail.UnitPrice;
-                    vat += (detail.UnitPrice * 0.2d);
-                }
-                gross += net + vat;
-                productCatalogueSummary.PriceSummary.Net = Math.Round(net, 2);
-                productCatalogueSummary.PriceSummary.VAT = Math.Round(vat, 2);
-                productCatalogueSummary.PriceSummary.Gross = Math.Round(gross, 2);
-            }
+                    string productURL = link.Attributes["href"].Value;
+                    if (productURL.Contains("/challenge001"))
+                        productURL = productURL.Replace("/challenge001", "");
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append(url_);
+                    sb.Append(productURL);
 
-            return productCatalogueSummary;
+                    if (!homePageLinks.Contains(sb.ToString()))
+                    {
+                        homePageLinks.Add(sb.ToString());
+                    }
+                }
+            }
+            return homePageLinks;
         }
 
-        private List<ProductPageDetails> GetPageDetails(List<string> urlList_)
+        private async Task<List<ProductPageDetails>> GetPageDetails(List<string> urlList_)
         {
             var pageDetailsList = new List<ProductPageDetails>();
             foreach (var url in urlList_)
             {
-                var htmlNode = GetHTML(url);
+                var htmlNode = await GetHTML(url);
                 var pageDetails = new ProductPageDetails()
                 {
                     URL = url
@@ -83,7 +83,7 @@ namespace Webscraper.Managers
                                     break;
 
                                 case "productDescription2":
-                                        pageDetails.Description = span.InnerText;
+                                    pageDetails.Description = HtmlEntity.DeEntitize(span.InnerText);
                                     break;
 
                                 case "productItemCode":
@@ -130,40 +130,42 @@ namespace Webscraper.Managers
             return pageDetailsList;
         }
 
-        public List<string> GetPageLinks(string url_)
+        public WebManager()
         {
-            var homePageLinks = new List<string>();
-            var html = GetHTML(url_);
-            var links = html.CssSelect("a");
-
-            foreach (var link in links)
-            {
-                if (link.Attributes["class"].Value.Contains("productLink"))
-                {
-                    string productURL = link.Attributes["href"].Value;
-                    if (productURL.Contains("/challenge001"))
-                        productURL = productURL.Replace("/challenge001", "");
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append(url_);
-                    sb.Append(productURL);
-
-                    if (!homePageLinks.Contains(sb.ToString()))
-                    {
-                        homePageLinks.Add(sb.ToString());
-                    }
-                }
-            }
-
-            return homePageLinks;
+            _scrapingBrowser = new ScrapySharp.Network.ScrapingBrowser();
+            _scrapingBrowser.Encoding = Encoding.UTF8;
         }
 
-
-
-        private HtmlNode GetHTML(string url_)
+        public async Task<ProductCatalogueSummary> ScrapeSite(string url_)
         {
-            
-            ScrapySharp.Network.WebPage webPage = _scrapingBrowser.NavigateToPage(new Uri(url_));
-            return webPage.Html;
+            var productCatalogueSummary = new ProductCatalogueSummary();
+            var pageLinks = await GetPageLinks(url_);
+            List<ProductPageDetails> pageDetails = null;
+
+            if (pageLinks != null && pageLinks.Count > 0)
+            {
+                pageDetails = await GetPageDetails(pageLinks);
+            }
+
+            if (pageDetails != null)
+            {
+                double net = 0;
+                double vat = 0;
+                double gross = 0;
+
+                foreach (var detail in pageDetails)
+                {
+                    productCatalogueSummary.ProductPageDetails.Add(detail);
+                    net += detail.UnitPrice;
+                    vat += (detail.UnitPrice * 0.2d);
+                }
+                gross += net + vat;
+                productCatalogueSummary.PriceSummary.Net = Math.Round(net, 2);
+                productCatalogueSummary.PriceSummary.VAT = Math.Round(vat, 2);
+                productCatalogueSummary.PriceSummary.Gross = Math.Round(gross, 2);
+            }
+
+            return productCatalogueSummary;
         }
     }
 }
