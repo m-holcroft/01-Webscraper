@@ -25,21 +25,21 @@ namespace Webscraper
 
             var productCatalogueSummary = await scraper.ScrapeSite(Properties.AppSettings.Default.KibbleStoresURL);
 
-            foreach (var details in productCatalogueSummary.ProductPageDetails)
-            {
-                Console.OutputEncoding = Encoding.UTF8;
-                Console.WriteLine("Title: " + details.Title);
-                Console.WriteLine("\tCode:" + details.Code);
-                Console.WriteLine("\tEnergy: " + string.Format("{0:0}kcal per 100g", details.Energy));
-                Console.WriteLine("\tUnit Price: " + string.Format("£{0:0.00}/unit", details.UnitPrice));
-                Console.WriteLine("\tDescription: " + details.Description);
-                Console.WriteLine("----------------------------------");    
-            }
+            //foreach (var details in productCatalogueSummary.ProductPageDetails)
+            //{
+            //    Console.OutputEncoding = Encoding.UTF8;
+            //    Console.WriteLine("Title: " + details.Title);
+            //    Console.WriteLine("\tCode:" + details.Code);
+            //    Console.WriteLine("\tEnergy: " + string.Format("{0:0}kcal per 100g", details.Energy));
+            //    Console.WriteLine("\tUnit Price: " + string.Format("£{0:0.00}/unit", details.UnitPrice));
+            //    Console.WriteLine("\tDescription: " + details.Description);
+            //    Console.WriteLine("----------------------------------");    
+            //}
 
-            Console.WriteLine("--------- Total ----------");
-            Console.WriteLine(string.Format("Net: £{0:0.00}", productCatalogueSummary.PriceSummary.Net));
-            Console.WriteLine(string.Format("VAT: £{0:0.00}", productCatalogueSummary.PriceSummary.VAT));
-            Console.WriteLine(string.Format("Gross: £{0:0.00}", productCatalogueSummary.PriceSummary.Gross));
+            //Console.WriteLine("--------- Total ----------");
+            //Console.WriteLine(string.Format("Net: £{0:0.00}", productCatalogueSummary.PriceSummary.Net));
+            //Console.WriteLine(string.Format("VAT: £{0:0.00}", productCatalogueSummary.PriceSummary.VAT));
+            //Console.WriteLine(string.Format("Gross: £{0:0.00}", productCatalogueSummary.PriceSummary.Gross));
 
             JsonSerializerSettings settings = new JsonSerializerSettings();
             settings.Converters.Add(new DecimalFormatConverter());
