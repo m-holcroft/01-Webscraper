@@ -23,6 +23,7 @@ namespace Webscraper
         {
             WebManager scraper = new WebManager();
 
+            Console.WriteLine("Starting...");
             var productCatalogueSummary = await scraper.ScrapeSite(Properties.AppSettings.Default.KibbleStoresURL);
 
             //foreach (var details in productCatalogueSummary.ProductPageDetails)
@@ -33,7 +34,7 @@ namespace Webscraper
             //    Console.WriteLine("\tEnergy: " + string.Format("{0:0}kcal per 100g", details.Energy));
             //    Console.WriteLine("\tUnit Price: " + string.Format("£{0:0.00}/unit", details.UnitPrice));
             //    Console.WriteLine("\tDescription: " + details.Description);
-            //    Console.WriteLine("----------------------------------");    
+            //    Console.WriteLine("----------------------------------");
             //}
 
             //Console.WriteLine("--------- Total ----------");
@@ -52,6 +53,8 @@ namespace Webscraper
 
             File.WriteAllText(@".\Output\Output.txt", json);
 
+            Console.WriteLine(@"Output file can be found inside the project folder at bin\[BuildMode]\Output\Output.txt");
+            Console.WriteLine("Press any key to continue...");
             Console.Read();
         }
     }
